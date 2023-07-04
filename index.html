@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Bytes Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        input {
+        	
+        width : 100%;
+        padding:10px;
+        
+        }
+        
+        canvas {
+            display: block;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
+        
+        #myImage {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
+        
+        pre {
+            padding: 10px;
+            background-color: #f6f8fa;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        #copyButton {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        
+        #copyButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Starving  Artist Art Generator</h1>
+        
+        <label for="dataValue">Art Name :- </label>
+        <input type="text" id="dataValue" />
+        <br />
+        <label for="pixelsValue"> Drawing Time- :</label>
+        <input type="text" id="pixelsValue" />
+        <br /><br/>
+        
+        
+        <input type="file" id="imageInput" accept="image/*">
+        <canvas id="myCanvas" width="32" height="32"></canvas>
+        <img id="myImage" src="" alt="Generated Image">
+        
+        
+        <p id="luaCode"></p>
+        <pre id="response"></pre>
+        <button id="copyButton" onclick="copyScript()">Copy Script</button>
+    </div>
+
+    <script>
+        var storedImageBytes; 
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        document.getElementById("imageInput").addEventListener("change", function(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var image = new Image();
+                image.onload = function() {
+                    canvas.width = 32;
+                    canvas.height = 32;
+                    ctx.drawImage(image, 0, 0, 32, 32);
+
+                    var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    var imageBytes = '{\n';
+
+                    for (var i = 0; i < imageData.length; i += 4) {
+                        var r = imageData[i];
+                        var g = imageData[i + 1];
+                        var b = imageData[i + 2];
+                        imageBytes += '    {R = ' + r + ', G = ' + g + ', B = ' + b + '},\n';
+                    }
+
+                    imageBytes = imageBytes.slice(0, -2);  // Remove the extra comma and space at the end
+                    imageBytes += '\n}';
+
+                    storedImageBytes = imageBytes; 
+
+                    var dataValue = document.getElementById('dataValue').value;
+                    var time = document.getElementById('pixelsValue').value;
+
+                    var luaCode = `
+local data = {['${dataValue}'] = ${storedImageBytes}}
+local Pixels = data['${dataValue}']
+local UI = game.Players.LocalPlayer.PlayerGui.MainGui.PaintFrame.GridHolder.Grid
+for i,v in pairs(Pixels) do
+    UI[i].BackgroundColor3 = Color3.fromRGB(v.R, v.G, v.B)
+    wait(${time})
+end
+`;
+
+                    $.ajax({
+                        url: "https://dpaste.com/api/v2/",
+                        type: "POST",
+                        data: {
+                            "content": luaCode,
+                            "title": "Generated Lua Code",
+                            "syntax": "lua",
+                            "expiry_days": 7
+                        },
+                        success: function (data) {
+                            var pasteKey = data.trim().split("/").pop();
+                    var rawLink = "loadstring(game:HttpGet('" + "https://dpaste.com/" + pasteKey + ".txt'))()";
+                    document.getElementById("response").innerText = rawLink;
+                        },
+                        error: function (xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+                };
+
+                image.src = e.target.result;
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        function copyScript() {
+            var scriptText = document.getElementById("response").innerText;
+
+            // Create a temporary input element
+            var tempInput = document.createElement("input");
+            tempInput.setAttribute("type", "text");
+            tempInput.setAttribute("value", scriptText);
+            document.body.appendChild(tempInput);
+
+            // Copy the script text from the temporary input
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand("copy");
+
+            // Remove the temporary input element
+            document.body.removeChild(tempInput);
+
+            alert("Script copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
