@@ -3,133 +3,139 @@
 <head>
     <title>Image Bytes Example</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/css/bootstrap.min.css">
     <style>
         body {
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-}
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
 
-h1 {
-    text-align: center;
-    margin-top: 20px;
-}
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-.container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-label {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
 
-input[type="file"] {
-    display: block;
-    margin-bottom: 10px;
-}
+        input[type="file"] {
+            display: block;
+            margin-bottom: 10px;
+        }
 
-input {
-    width: 100%;
-    padding: 10px;
-}
+        input {
+            width: 95%;
+            padding: 10px;
+        }
 
-canvas {
-    display: block;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-}
+        canvas {
+            display: block;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+        }
 
-#myImage {
-    display: block;
-    max-width: 100%;
-    height: auto;
-    margin-bottom: 10px;
-}
+        #myImage {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 10px;
+        }
 
-pre {
-    padding: 10px;
-    background-color: #f6f8fa;
-    border: 1px solid #ccc;
-    white-space: pre-wrap;
-    word-break: break-word;
-}
+        pre {
+            padding: 10px;
+            background-color: #f6f8fa;
+            border: 1px solid #ccc;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
 
-#copyButton {
-    display: block;
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 16px;
-    background-color: #4caf50;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-}
+        #copyButton {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
 
-#copyButton:hover {
-    background-color: #45a049;
-}
+        #copyButton:hover {
+            background-color: #45a049;
+        }
 
-@media (max-width: 600px) {
-    .container {
-        padding: 10px;
-    }
-    
-    h1 {
-        font-size: 20px;
-        margin-top: 10px;
-    }
-    
-    input, canvas, #myImage {
-        margin-bottom: 5px;
-    }
-    
-    pre {
-        font-size: 14px;
-    }
-}
-
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 20px;
+                margin-top: 10px;
+            }
+            
+            input, canvas, #myImage {
+                margin-bottom: 5px;
+            }
+            
+            pre {
+                font-size: 14px;
+            }
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <div class="container">
-        <h1>Starving  Artist Art Generator</h1>
+        <h1 class="mb-4">Starving Artist Art Generator</h1>
         
+        <div class="mb-3">
+            <label for="dataValue" class="form-label">Art Name:</label>
+            <input type="text" id="dataValue" class="form-control">
+        </div>
         
-        <label for="dataValue">Art Name:</label>
-        <input type="text" id="dataValue" />
-        <br />
-        <label for="pixelsValue">Drawing Time:</label>
-        <input type="text" id="pixelsValue" />
-        <br /><br/>
+        <div class="mb-3">
+            <label for="pixelsValue" class="form-label">Drawing Time:</label>
+            <input type="text" id="pixelsValue" class="form-control">
+        </div>
         
-        <input type="file" id="imageInput" accept="image/*">
-        <canvas id="myCanvas" width="32" height="32"></canvas>
-        <img id="myImage" src="" alt="Generated Image">
+        <div class="mb-3">
+            <input type="file" id="imageInput" accept="image/*" class="form-control">
+        </div>
+        
+        <canvas id="myCanvas" width="32" height="32" class="mb-3"></canvas>
+        <img id="myImage" src="" alt="Generated Image" class="mb-3">
         
         <p id="luaCode"></p>
         <pre id="response"></pre>
-        <button id="copyButton" onclick="copyScript()">Copy Script</button>
         
+        <button id="copyButton" onclick="copyScript()" class="btn btn-success">Copy Script</button>
         
-        
-                <p>
-            Hi guys, it's me, Flav. This is the Starving Artist Art Generator website, where you can generate art for the Roblox game Starving Artist.
-            To use this website, you need to write the following:
-        </p>
-        <p>
-       <b>     Art Name:      </b>    The name of your art.<br></br>
-               <b>   Drawing Time:       </b>    The amount of time it took you to draw your art. This must be 0.4 seconds.
-            If you do not put these two things, the script will not work.
-        </p>
-        
-        
+        <div class="mt-4">
+            <p>
+                Hi guys, it's me, Flav. This is the Starving Artist Art Generator website, where you can generate art for the Roblox game Starving Artist.
+                To use this website, you need to write the following:
+            </p>
+            <p>
+                <b>Art Name:</b> The name of your art.
+                <br>
+                <b>Drawing Time:</b> The amount of time it took you to draw your art. This must be 0.4 seconds.
+                If you do not put these two things, the script will not work.
+            </p>
+        </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.0/js/bootstrap.bundle.min.js"></script>
     <script>
         var storedImageBytes; 
         var canvas = document.getElementById("myCanvas");
